@@ -22,6 +22,7 @@ Under the Parity Conjecture this gives lower bounds for the rank of $E$ over mul
 | `HighRankCurves.m` | The record curves of Section 2 ($E_{32}$, $E_{31}$, $E'_{31}$, $E_{30}$, $E_{29}$, $E_{28}$, $E_{17}$), with their bad primes, conductors and root numbers. |
 | `verify-paper.m` | Checks the numerical claims of the paper outside Section 6 (see below). |
 | `verify-paper.out` | The output of `verify-paper.m`, for comparison. |
+| `lean/` | A Lean 4 / Mathlib formalization of Lemma 5.2, Remark 5.8 (and the optimality of the bounds in Theorem 1.1), Lemma 5.4 and Remark 5.7. See `lean/README.md`. |
 
 ## Usage
 
@@ -83,6 +84,10 @@ Run `magma -b verify-paper.m` from this folder. Each check prints `PASS` or `FAI
 All ranks are proved with `RankBounds` (the lower and upper bounds agree), and no class group bounds are assumed, so they do not depend on GRH. Example 6.1 and the table at the end of Section 6 are outputs of the algorithms: run the commands quoted there after `load "EllipticRankTwists.m";`.
 
 `verify-paper.out` was produced with Magma V2.25-3.
+
+## Lean formalization
+
+The folder `lean/` formalizes the combinatorial and elementary number-theoretic core of the paper in Lean 4 with Mathlib: every part of Lemma 5.2, the sign-pattern bounds of Remark 5.8 and the optimality of the increments in Theorem 1.1, and the arithmetic of Lemma 5.4 and Remark 5.7. The results the paper cites (Kida's formula, Dokchitser's root-number formula, the Parity Conjecture or $p$-parity, Gross–Zagier–Kolyvagin, BSD) are not in Mathlib, so they enter as explicit hypotheses, never as axioms. To check it, run `lake exe cache get && lake build` in `lean/`; `lean/README.md` maps each result to its Lean name and lists exactly what is assumed.
 
 ## Related
 

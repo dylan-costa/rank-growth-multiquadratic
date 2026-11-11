@@ -1,0 +1,10 @@
+name = "RankGrowth"
+defaultTargets = ["RankGrowth"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "db00fb3901b1bb4954f8a2373285959a5930bbfa"
+
+[[lean_lib]]
+name = "RankGrowth"
