@@ -94,6 +94,72 @@ theorem signPattern_minus (hP : T.Parity) (h0 : T.rootNumber ∅ = -1) :
   unfold countMinus
   omega
 
+/-! ### Remark 5.8: which twists have root number `-1` -/
+
+/-- `∏_{k ∈ S} W(E^{d_k}) = (-1)^{|S \ P|}`, `P = {k : W(E^{d_k}) = +1}`. -/
+lemma prod_rootNumber_singleton (S : Finset (Fin n)) :
+    ∏ k ∈ S, T.rootNumber {k} =
+      (-1) ^ (S \ Finset.univ.filter fun k => T.rootNumber {k} = 1).card := by
+  classical
+  have hdiff : (S \ Finset.univ.filter fun k => T.rootNumber {k} = 1)
+      = S.filter fun k => ¬ T.rootNumber {k} = 1 := by
+    ext k; simp
+  rw [hdiff, ← Finset.prod_filter_mul_prod_filter_not S (fun k => T.rootNumber {k} = 1)]
+  rw [Finset.prod_eq_one (fun k hk => (Finset.mem_filter.mp hk).2), one_mul]
+  rw [Finset.prod_congr rfl (fun k hk => (T.rootNumber_sign {k}).resolve_left
+    (Finset.mem_filter.mp hk).2), Finset.prod_const]
+
+lemma neg_one_pow_eq_neg_one_iff (a : ℕ) : (-1 : ℤ) ^ a = -1 ↔ Odd a := by
+  rcases Nat.even_or_odd a with h | h
+  · rw [h.neg_one_pow]
+    simp only [show ¬ Odd a from Nat.not_odd_iff_even.mpr h, iff_false]
+    norm_num
+  · simp [h.neg_one_pow, h]
+
+/-- **Remark 5.8, `W(E) = +1`.** `W(E^{d_S}) = -1` iff `|S \ P|` is odd. -/
+theorem rootNumber_eq_neg_one_iff_plus (h0 : T.rootNumber ∅ = 1) (S : Finset (Fin n)) :
+    T.rootNumber S = -1 ↔
+      Odd (S \ Finset.univ.filter fun k => T.rootNumber {k} = 1).card := by
+  rw [T.rootNumber_mul S, h0, one_pow, one_mul, T.prod_rootNumber_singleton,
+    neg_one_pow_eq_neg_one_iff]
+
+/-- **Remark 5.8, `W(E) = -1`.** `W(E^{d_S}) = -1` iff `|S ∩ P|` is even. -/
+theorem rootNumber_eq_neg_one_iff_minus (h0 : T.rootNumber ∅ = -1) (S : Finset (Fin n)) :
+    T.rootNumber S = -1 ↔
+      Even (S ∩ Finset.univ.filter fun k => T.rootNumber {k} = 1).card := by
+  classical
+  have hcard : (S ∩ Finset.univ.filter fun k => T.rootNumber {k} = 1).card
+      + (S \ Finset.univ.filter fun k => T.rootNumber {k} = 1).card = S.card := by
+    rw [add_comm]; exact Finset.card_sdiff_add_card_inter _ _
+  rw [T.rootNumber_mul S, h0, T.prod_rootNumber_singleton, ← pow_add,
+    neg_one_pow_eq_neg_one_iff]
+  constructor
+  · intro h
+    by_contra he
+    rw [Nat.not_even_iff_odd] at he
+    obtain ⟨a, ha⟩ := he
+    obtain ⟨b, hb⟩ := h
+    omega
+  · intro h
+    obtain ⟨a, ha⟩ := h
+    exact ⟨a + (S \ Finset.univ.filter fun k => T.rootNumber {k} = 1).card, by omega⟩
+
 end TwistFamily
+
+/-! ### Remark 5.8: comparing the bounds of Lemma 5.2 (4) -/
+
+/-- **Remark 5.8.** For `n ≥ 2` the bound of (4)(c) is at least that of (4)(a). -/
+theorem bound4a_le_bound4c (n : ℕ) (hn : 2 ≤ n) : 2 * n ≤ 2 ^ (n - 1) + 2 * n - 2 := by
+  have : 2 ≤ 2 ^ (n - 1) := by
+    calc 2 = 2 ^ 1 := by norm_num
+      _ ≤ 2 ^ (n - 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+  omega
+
+/-- **Remark 5.8.** Equality for `n = 2`. -/
+theorem bound4a_eq_bound4c_two : 2 * 2 = 2 ^ (2 - 1) + 2 * 2 - 2 := by norm_num
+
+/-- **Remark 5.8.** For `n ≥ 2` the bound of (4)(c) is larger than that of (4)(b). -/
+theorem bound4b_lt_bound4c (n : ℕ) (hn : 2 ≤ n) : 2 ^ (n - 1) < 2 ^ (n - 1) + 2 * n - 2 := by
+  omega
 
 end RankGrowth
